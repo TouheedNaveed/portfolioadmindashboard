@@ -1,7 +1,8 @@
 import { useLocation } from 'react-router-dom';
-import { Bell, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { Avatar } from '@/components/ui/Avatar';
+import { NotificationPanel } from '@/components/ui/NotificationPanel';
 
 function buildBreadcrumb(pathname: string): string {
     const parts = pathname.split('/').filter(Boolean);
@@ -57,18 +58,18 @@ export function TopBar({ onMenuClick }: TopBarProps) {
                             marginLeft: -6,
                             alignItems: 'center',
                         }}
-                        aria-label="Open menu"
+                        aria-label="Open navigation menu"
                     >
                         <Menu size={20} />
                     </button>
                     <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{crumb}</p>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex' }}>
-                        <Bell size={18} />
-                    </button>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 16, borderLeft: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    {/* 🔔 Live notification panel */}
+                    <NotificationPanel />
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 12, borderLeft: '1px solid rgba(255,255,255,0.08)' }}>
                         <div className="topbar-username" style={{ textAlign: 'right' }}>
                             <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.2 }}>{user?.name}</p>
                             <p style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{user?.email}</p>

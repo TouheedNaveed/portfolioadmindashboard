@@ -3,6 +3,7 @@ import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { useNotifications } from '@/hooks/useNotifications';
 
 const pageVariants = {
     initial: { opacity: 0, y: 12 },
@@ -10,6 +11,7 @@ const pageVariants = {
 };
 
 export function DashboardLayout() {
+    useNotifications(); // 🔔 Start polling for unread contacts
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
