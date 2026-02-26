@@ -9,6 +9,10 @@ import authRoutes from './routes/auth.routes';
 import contactRoutes from './routes/contacts.routes';
 
 const app = express();
+
+// 🔥 FIX: trust proxy for express-rate-limit on Railway
+app.set('trust proxy', 1);
+
 const PORT = process.env.PORT || 4000;
 
 // Security middleware
