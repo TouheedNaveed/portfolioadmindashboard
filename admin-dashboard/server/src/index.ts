@@ -18,11 +18,8 @@ const supabase = createClient(
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// 🔥 FIX: trust proxy for express-rate-limit on Railway
 // 🔥 TRUST PROXY for Railway / Vercel proxy
 app.set('trust proxy', 1);
-
-const PORT = process.env.PORT || 4000;
 
 // Security middleware
 app.use(helmet());
@@ -33,7 +30,6 @@ app.use(cors({
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 
-// Rate limiting
 // 🔹 Rate limiting (after trust proxy)
 app.use(globalLimiter);
 
@@ -53,7 +49,6 @@ app.get('/test-supabase', async (_, res) => {
 });
 
 // Health check
-app.get('/health', (_, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 app.get('/health', (_, res) => res.json({
   status: 'ok',
   timestamp: new Date().toISOString()
@@ -63,8 +58,6 @@ app.get('/health', (_, res) => res.json({
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-    console.log(`🚀 AdminHub server running on port ${PORT}`);
-    console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🚀 AdminHub server running on port ${PORT}`);
   console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
 });
