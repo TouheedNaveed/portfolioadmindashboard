@@ -13,21 +13,33 @@ export function DashboardLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-base)' }} className="flex min-h-screen">
-            <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <>
+            <style>{`
+                @media (min-width: 1024px) {
+                    .dashboard-content-area {
+                        padding-left: 240px !important;
+                    }
+                }
+            `}</style>
+            <div style={{ minHeight: '100vh', background: 'var(--bg-base)' }}>
+                <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-            <div className="flex-1 flex flex-col min-h-screen w-full lg:ml-[240px]">
-                <TopBar onMenuClick={() => setSidebarOpen(true)} />
-                <motion.main
-                    key="dashboard-main"
-                    variants={pageVariants}
-                    initial="initial"
-                    animate="animate"
-                    className="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden"
+                <div
+                    className="dashboard-content-area"
+                    style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
                 >
-                    <Outlet />
-                </motion.main>
+                    <TopBar onMenuClick={() => setSidebarOpen(true)} />
+                    <motion.main
+                        key="dashboard-main"
+                        variants={pageVariants}
+                        initial="initial"
+                        animate="animate"
+                        style={{ flex: 1, padding: '32px 24px' }}
+                    >
+                        <Outlet />
+                    </motion.main>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
