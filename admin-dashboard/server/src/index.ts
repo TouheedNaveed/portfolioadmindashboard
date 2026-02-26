@@ -8,6 +8,7 @@ import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './routes/auth.routes';
 import contactRoutes from './routes/contacts.routes';
 import { createClient } from '@supabase/supabase-js';
+import { ValueDeterminingMiddleware } from 'some-library'; // replace with your actual library
 
 // -------------------------
 // Initialize Supabase
@@ -65,6 +66,23 @@ const authLimiter = rateLimit({
 app.use(globalLimiter);
 
 // -------------------------
+// Value-Determining Middleware Fix
+// -------------------------
+// Line 54 fix
+const getUserId: ValueDeterminingMiddleware<string> = (req: Request) => {
+  const userId = req.cookies.userId;
+  if (!userId) throw new Error('User ID is missing in cookies');
+  return userId;
+};
+
+// Line 62 fix
+const getApiKey: ValueDeterminingMiddleware<string> = (req: Request) => {
+  const apiKey = req.headers['x-api-key'];
+  if (!apiKey || typeof apiKey !== 'string') throw new Error('API key missing or invalid');
+  return apiKey;
+};
+
+// -------------------------
 // Routes
 // -------------------------
 app.use('/api/auth', authLimiter, authRoutes);
@@ -95,7 +113,6 @@ app.get('/test-supabase', async (_req: Request, res: Response) => {
 // Global Error Handler
 // -------------------------
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  // Ensure errorHandler is type-safe
   errorHandler(err, _req, res, _next);
 });
 
