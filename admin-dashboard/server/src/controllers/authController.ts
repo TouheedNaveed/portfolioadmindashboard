@@ -12,6 +12,7 @@ import {
     markResetTokenUsed,
 } from '../services/tokenService';
 import { sendPasswordResetEmail } from '../services/emailService';
+import { AuthRequest } from '../middleware/authMiddleware';
 
 const REFRESH_COOKIE = 'refresh_token';
 const COOKIE_OPTIONS = {
@@ -205,4 +206,132 @@ export async function resetPassword(req: Request, res: Response): Promise<void> 
     if (user) await deleteUserRefreshTokens(user.id);
 
     res.json({ message: 'Password reset successfully' });
+}
+
+// PATCH /api/auth/profile
+export async function updateProfile(req: AuthRequest, res: Response): Promise<void> {
+    const { name, email, currentPassword, newPassword } = req.body;
+    const userId = req.userId;
+
+    if (!userId) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+
+    try {
+        const updates: any = {};
+
+        if (name) updates.name = name;
+        if (email) updates.email = email.toLowerCase();
+
+        // If trying to change password or email, verify current password first
+        if ((email || newPassword) && currentPassword) {
+            const { data: user } = await supabase
+                .from('users')
+                .select('password_hash')
+                .eq('id', userId)
+                .single();
+
+            if (!user) {
+                res.status(404).json({ error: 'User not found' });
+                return;
+            }
+
+            const passwordMatch = await bcrypt.compare(currentPassword, user.password_hash);
+            if (!passwordMatch) {
+                res.status(401).json({ error: 'Incorrect current password' });
+                return;
+            }
+
+            if (newPassword) {
+                updates.password_hash = await bcrypt.hash(newPassword, 12);
+            }
+        } else if ((email || newPassword) && !currentPassword) {
+            res.status(400).json({ error: 'Current password is required to change email or password' });
+            return;
+        }
+
+        if (Object.keys(updates).length === 0) {
+            res.json({ message: 'No changes provided' });
+            return;
+        }
+
+        const { data: updatedUser, error } = await supabase
+            .from('users')
+            .update(updates)
+            .eq('id', userId)
+            .select('id, name, email, avatar_url, created_at')
+            .single();
+
+        if (error) {
+            console.error('Profile update error:', error);
+            res.status(500).json({ error: 'Failed to update profile' });
+            return;
+        }
+
+        res.json({ user: updatedUser });
+    } catch (err) {
+        console.error('Profile update exception:', err);
+        res.status(500).json({ error: 'Server error during profile update' });
+    }
+}
+
+// POST /api/auth/profile/avatar
+export async function uploadAvatar(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.userId;
+    const file = req.file; // from multer
+
+    if (!userId) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+
+    if (!file) {
+        res.status(400).json({ error: 'No image file provided' });
+        return;
+    }
+
+    try {
+        const fileExt = file.originalname.split('.').pop();
+        const fileName = `${userId}-${Date.now()}.${fileExt}`;
+        const filePath = `${userId}/${fileName}`;
+
+        // Upload to Supabase Storage
+        const { error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(filePath, file.buffer, {
+                contentType: file.mimetype,
+                upsert: true
+            });
+
+        if (uploadError) {
+            console.error('Avatar upload error:', uploadError);
+            res.status(500).json({ error: 'Failed to upload image' });
+            return;
+        }
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(filePath);
+
+        // Update user row with new avatar_url
+        const { data: updatedUser, error: updateError } = await supabase
+            .from('users')
+            .update({ avatar_url: publicUrl })
+            .eq('id', userId)
+            .select('id, name, email, avatar_url, created_at')
+            .single();
+
+        if (updateError) {
+            console.error('User DB update error:', updateError);
+            res.status(500).json({ error: 'Failed to save avatar URL to profile' });
+            return;
+        }
+
+        res.json({ user: updatedUser, avatarUrl: publicUrl });
+    } catch (err) {
+        console.error('Avatar upload exception:', err);
+        res.status(500).json({ error: 'Server error during avatar upload' });
+    }
 }

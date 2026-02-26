@@ -13,6 +13,7 @@ const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Contacts = lazy(() => import('@/pages/Contacts'));
 const ContactDetail = lazy(() => import('@/pages/ContactDetail'));
+const Settings = lazy(() => import('@/pages/Settings'));
 
 export default function App() {
   return (
@@ -35,12 +36,7 @@ export default function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/dashboard/contacts" element={<Contacts />} />
                 <Route path="/dashboard/contacts/:id" element={<ContactDetail />} />
-                <Route path="/dashboard/settings" element={
-                  <div style={{ color: 'var(--text-muted)', padding: 40, textAlign: 'center' }}>
-                    <h2 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 32, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Settings</h2>
-                    <p>Coming soon</p>
-                  </div>
-                } />
+                <Route path="/dashboard/settings" element={<Settings />} />
               </Route>
             </Route>
 

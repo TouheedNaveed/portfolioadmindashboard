@@ -35,5 +35,5 @@ export function useAuth() {
         }
     }, [clearAuth, navigate]);
 
-    return { user, accessToken, isAuthenticated: !!accessToken, login, signup, logout };
+    return { user, accessToken, isAuthenticated: !!accessToken, login, signup, logout, setAuth };
 }

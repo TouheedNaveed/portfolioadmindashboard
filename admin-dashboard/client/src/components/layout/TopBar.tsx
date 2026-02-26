@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import { Bell } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
+import { Avatar } from '@/components/ui/Avatar';
 
 function buildBreadcrumb(pathname: string): string {
     const parts = pathname.split('/').filter(Boolean);
@@ -23,13 +24,7 @@ export function TopBar() {
             <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{crumb}</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <Bell size={18} style={{ color: 'var(--text-muted)', cursor: 'pointer' }} />
-                <div style={{
-                    width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', fontSize: 12, fontWeight: 600, color: '#F2F2ED',
-                    background: 'linear-gradient(135deg, #3B1FD4, #E03FD8)', cursor: 'pointer',
-                }}>
-                    {user?.name?.charAt(0).toUpperCase() || 'A'}
-                </div>
+                <Avatar src={user?.avatar_url} name={user?.name} size="sm" />
             </div>
         </header>
     );

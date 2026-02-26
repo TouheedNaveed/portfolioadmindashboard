@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, MessageSquare, Settings, LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { Avatar } from '@/components/ui/Avatar';
 
 const navItems = [
     { icon: LayoutDashboard, label: 'Overview', to: '/dashboard', end: true },
@@ -61,13 +62,7 @@ export function Sidebar() {
 
             {/* User row */}
             <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{
-                    width: 32, height: 32, borderRadius: '50%', flexShrink: 0, display: 'flex',
-                    alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600,
-                    color: '#F2F2ED', background: 'linear-gradient(135deg, #3B1FD4, #E03FD8)',
-                }}>
-                    {user?.name?.charAt(0).toUpperCase() || 'A'}
-                </div>
+                <Avatar src={user?.avatar_url} name={user?.name} size="sm" />
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name || 'Admin'}</p>
                     <p style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email}</p>
