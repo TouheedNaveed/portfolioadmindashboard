@@ -32,7 +32,16 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // ⚡ Never attempt token refresh for auth endpoints themselves.
+        // Without this guard, a wrong-password login 401 triggers the refresh
+        // flow, which also fails, and then does window.location.href = '/login'
+        // causing a full page reload instead of showing the error message.
+        const isAuthUrl = originalRequest?.url?.includes('/auth/login') ||
+            originalRequest?.url?.includes('/auth/signup') ||
+            originalRequest?.url?.includes('/auth/refresh') ||
+            originalRequest?.url?.includes('/auth/logout');
+
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthUrl) {
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });

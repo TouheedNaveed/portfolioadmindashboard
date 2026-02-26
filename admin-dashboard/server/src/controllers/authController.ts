@@ -79,7 +79,7 @@ export async function login(req: Request, res: Response): Promise<void> {
 
     const { data: user } = await supabase
         .from('users')
-        .select('*')
+        .select('id, name, email, avatar_url, password_hash')
         .eq('email', email.toLowerCase())
         .single();
 
@@ -98,7 +98,10 @@ export async function login(req: Request, res: Response): Promise<void> {
     const refreshToken = await createRefreshToken(user.id);
 
     res.cookie(REFRESH_COOKIE, refreshToken, COOKIE_OPTIONS);
-    res.json({ user: { id: user.id, name: user.name, email: user.email }, accessToken });
+    res.json({
+        user: { id: user.id, name: user.name, email: user.email, avatar_url: user.avatar_url },
+        accessToken,
+    });
 }
 
 // POST /api/auth/refresh
