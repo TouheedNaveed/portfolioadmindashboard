@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -21,7 +21,7 @@ const supabase = createClient(
 // Initialize Express App
 // -------------------------
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 4000;
 
 // -------------------------
 // TRUST PROXY
@@ -34,32 +34,32 @@ app.set('trust proxy', 1);
 // Security & Middlewares
 // -------------------------
 app.use(helmet());
-app.use(cors({
-    origin: process.env.CLIENT_URL?.replace(/\/$/, ''), // remove trailing slash
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL?.replace(/\/$/, '') || '*',
     credentials: true,
-}));
+  })
+);
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 
 // -------------------------
 // Rate Limiters
 // -------------------------
-// Global limiter
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.ip, // uses correct IP after trust proxy
+  keyGenerator: (req: Request) => req.ip,
 });
 
-// Auth routes limiter
 const authLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.ip,
+  keyGenerator: (req: Request) => req.ip,
 });
 
 app.use(globalLimiter);
@@ -73,26 +73,31 @@ app.use('/api/contacts', contactRoutes);
 // -------------------------
 // Health Check & Test
 // -------------------------
-app.get('/health', (_, res) => res.json({
-  status: 'ok',
-  timestamp: new Date().toISOString()
-}));
+app.get('/health', (_req: Request, res: Response) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+  });
+});
 
 // Temporary Supabase test route (remove after testing)
-app.get('/test-supabase', async (_, res) => {
+app.get('/test-supabase', async (_req: Request, res: Response) => {
   try {
     const { data, error } = await supabase.from('users').select('*').limit(1);
     if (error) throw error;
     res.json({ success: true, data });
   } catch (err: any) {
-    res.json({ success: false, error: err.message });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
 // -------------------------
 // Global Error Handler
 // -------------------------
-app.use(errorHandler);
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  // Ensure errorHandler is type-safe
+  errorHandler(err, _req, res, _next);
+});
 
 // -------------------------
 // Start Server
