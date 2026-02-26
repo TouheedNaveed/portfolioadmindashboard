@@ -124,8 +124,8 @@ export default function Contacts() {
             </AnimatePresence>
 
             {/* Table */}
-            <div style={{ borderRadius: 8, border: '1px solid var(--border-subtle)', overflow: 'hidden' }}>
-                <table className="data-table">
+            <div style={{ borderRadius: 8, border: '1px solid var(--border-subtle)', overflowX: 'auto' }}>
+                <table className="data-table" style={{ minWidth: 800 }}>
                     <thead>
                         <tr>
                             <th style={{ width: 40 }}>

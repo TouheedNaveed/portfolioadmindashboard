@@ -122,141 +122,139 @@ export default function Settings() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="max-w-4xl space-y-6">
                 {/* Profile Card */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-surface border border-white/5 rounded-2xl overflow-hidden">
-                        <div className="p-6 border-b border-white/5 flex items-center gap-3">
-                            <UserIcon className="text-brand-purple" size={20} />
-                            <h2 className="text-lg font-medium text-white">Profile Details</h2>
-                        </div>
-
-                        <div className="p-6 space-y-8">
-                            {/* Avatar Section */}
-                            <div className="flex items-center gap-6">
-                                <Avatar
-                                    src={user?.avatar_url}
-                                    name={user?.name}
-                                    size="xl"
-                                    editable
-                                    isLoading={isUploading}
-                                    onUpload={handleAvatarUpload}
-                                />
-                                <div>
-                                    <h3 className="text-sm font-medium text-white mb-1">Profile Picture</h3>
-                                    <p className="text-xs text-text-secondary mb-3 max-w-sm">
-                                        Upload a high-res picture. Recommended size is 256x256px. PNG, JPG, or WEBP. Max 5MB.
-                                    </p>
-                                    <label className="text-sm cursor-pointer text-brand-purple hover:text-brand-magenta transition-colors font-medium">
-                                        Upload new
-                                        <input
-                                            type="file"
-                                            className="hidden"
-                                            accept="image/jpeg,image/png,image/webp"
-                                            onChange={(e) => {
-                                                const file = e.target.files?.[0];
-                                                if (file) handleAvatarUpload(file);
-                                            }}
-                                        />
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Profile Form */}
-                            <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
-                                {profileSuccess && (
-                                    <div className="p-3 bg-brand-purple/10 border border-brand-purple/20 text-brand-purple text-sm rounded-lg">
-                                        {profileSuccess}
-                                    </div>
-                                )}
-                                {profileError && (
-                                    <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-sm rounded-lg">
-                                        {profileError}
-                                    </div>
-                                )}
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Input
-                                        label="Full Name"
-                                        {...profileForm.register('name')}
-                                        error={profileForm.formState.errors.name?.message}
-                                    />
-                                    <Input
-                                        label="Email Address (Cannot be changed here)"
-                                        type="email"
-                                        {...profileForm.register('email')}
-                                        disabled
-                                    />
-                                </div>
-
-                                <div className="flex justify-end pt-2">
-                                    <Button
-                                        type="submit"
-                                        disabled={!profileForm.formState.isDirty || profileForm.formState.isSubmitting}
-                                        loading={profileForm.formState.isSubmitting}
-                                    >
-                                        <Save size={18} className="mr-2" />
-                                        Save Changes
-                                    </Button>
-                                </div>
-                            </form>
-                        </div>
+                <div className="bg-surface border border-white/5 rounded-2xl overflow-hidden">
+                    <div className="p-6 border-b border-white/5 flex items-center gap-3">
+                        <UserIcon className="text-brand-purple" size={20} />
+                        <h2 className="text-lg font-medium text-white">Profile Details</h2>
                     </div>
 
-                    {/* Security Card */}
-                    <div className="bg-surface border border-white/5 rounded-2xl overflow-hidden">
-                        <div className="p-6 border-b border-white/5 flex items-center gap-3">
-                            <Shield className="text-brand-orange" size={20} />
-                            <h2 className="text-lg font-medium text-white">Security</h2>
+                    <div className="p-4 sm:p-6 space-y-8">
+                        {/* Avatar Section */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+                            <Avatar
+                                src={user?.avatar_url}
+                                name={user?.name}
+                                size="xl"
+                                editable
+                                isLoading={isUploading}
+                                onUpload={handleAvatarUpload}
+                            />
+                            <div>
+                                <h3 className="text-sm font-medium text-white mb-1">Profile Picture</h3>
+                                <p className="text-xs text-text-secondary mb-3 max-w-sm">
+                                    Upload a high-res picture. Recommended size is 256x256px. PNG, JPG, or WEBP. Max 5MB.
+                                </p>
+                                <label className="text-sm cursor-pointer text-brand-purple hover:text-brand-magenta transition-colors font-medium">
+                                    Upload new
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        accept="image/jpeg,image/png,image/webp"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) handleAvatarUpload(file);
+                                        }}
+                                    />
+                                </label>
+                            </div>
                         </div>
 
-                        <div className="p-6">
-                            <form onSubmit={securityForm.handleSubmit(onSecuritySubmit)} className="space-y-4">
-                                {securitySuccess && (
-                                    <div className="p-3 bg-green-500/10 border border-green-500/20 text-green-500 text-sm rounded-lg">
-                                        {securitySuccess}
-                                    </div>
-                                )}
-                                {securityError && (
-                                    <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-sm rounded-lg">
-                                        {securityError}
-                                    </div>
-                                )}
+                        {/* Profile Form */}
+                        <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
+                            {profileSuccess && (
+                                <div className="p-3 bg-brand-purple/10 border border-brand-purple/20 text-brand-purple text-sm rounded-lg">
+                                    {profileSuccess}
+                                </div>
+                            )}
+                            {profileError && (
+                                <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-sm rounded-lg">
+                                    {profileError}
+                                </div>
+                            )}
 
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <Input
-                                    label="Current Password"
-                                    type="password"
-                                    {...securityForm.register('currentPassword')}
-                                    error={securityForm.formState.errors.currentPassword?.message}
+                                    label="Full Name"
+                                    {...profileForm.register('name')}
+                                    error={profileForm.formState.errors.name?.message}
                                 />
+                                <Input
+                                    label="Email Address (Cannot be changed here)"
+                                    type="email"
+                                    {...profileForm.register('email')}
+                                    disabled
+                                />
+                            </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Input
-                                        label="New Password"
-                                        type="password"
-                                        {...securityForm.register('newPassword')}
-                                        error={securityForm.formState.errors.newPassword?.message}
-                                    />
-                                    <Input
-                                        label="Confirm New Password"
-                                        type="password"
-                                        {...securityForm.register('confirmPassword')}
-                                        error={securityForm.formState.errors.confirmPassword?.message}
-                                    />
-                                </div>
+                            <div className="flex justify-end pt-2">
+                                <Button
+                                    type="submit"
+                                    disabled={!profileForm.formState.isDirty || profileForm.formState.isSubmitting}
+                                    loading={profileForm.formState.isSubmitting}
+                                >
+                                    <Save size={18} className="mr-2" />
+                                    Save Changes
+                                </Button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-                                <div className="flex justify-end pt-2">
-                                    <Button
-                                        type="submit"
-                                        variant="secondary"
-                                        disabled={!securityForm.formState.isDirty || securityForm.formState.isSubmitting}
-                                        loading={securityForm.formState.isSubmitting}
-                                    >
-                                        Update Password
-                                    </Button>
+                {/* Security Card */}
+                <div className="bg-surface border border-white/5 rounded-2xl overflow-hidden">
+                    <div className="p-6 border-b border-white/5 flex items-center gap-3">
+                        <Shield className="text-brand-orange" size={20} />
+                        <h2 className="text-lg font-medium text-white">Security</h2>
+                    </div>
+
+                    <div className="p-4 sm:p-6">
+                        <form onSubmit={securityForm.handleSubmit(onSecuritySubmit)} className="space-y-4">
+                            {securitySuccess && (
+                                <div className="p-3 bg-green-500/10 border border-green-500/20 text-green-500 text-sm rounded-lg">
+                                    {securitySuccess}
                                 </div>
-                            </form>
-                        </div>
+                            )}
+                            {securityError && (
+                                <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-sm rounded-lg">
+                                    {securityError}
+                                </div>
+                            )}
+
+                            <Input
+                                label="Current Password"
+                                type="password"
+                                {...securityForm.register('currentPassword')}
+                                error={securityForm.formState.errors.currentPassword?.message}
+                            />
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <Input
+                                    label="New Password"
+                                    type="password"
+                                    {...securityForm.register('newPassword')}
+                                    error={securityForm.formState.errors.newPassword?.message}
+                                />
+                                <Input
+                                    label="Confirm New Password"
+                                    type="password"
+                                    {...securityForm.register('confirmPassword')}
+                                    error={securityForm.formState.errors.confirmPassword?.message}
+                                />
+                            </div>
+
+                            <div className="flex justify-end pt-2">
+                                <Button
+                                    type="submit"
+                                    variant="secondary"
+                                    disabled={!securityForm.formState.isDirty || securityForm.formState.isSubmitting}
+                                    loading={securityForm.formState.isSubmitting}
+                                >
+                                    Update Password
+                                </Button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,9 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Settings, LogOut, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar } from '@/components/ui/Avatar';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const navItems = [
     { icon: LayoutDashboard, label: 'Overview', to: '/dashboard', end: true },
@@ -9,9 +11,32 @@ const navItems = [
     { icon: Settings, label: 'Settings', to: '/dashboard/settings' },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+    isOpen: boolean;
+    onClose: () => void;
+}
+
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Close mobile sidebar on route change
+    useEffect(() => {
+        onClose();
+    }, [location.pathname, onClose]);
+
+    // Prevent body scroll when mobile menu is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isOpen]);
 
     const handleLogout = async () => {
         await logout();
@@ -19,58 +44,86 @@ export function Sidebar() {
     };
 
     return (
-        <aside style={{
-            width: 240, minHeight: '100vh', background: 'var(--bg-surface)',
-            borderRight: '1px solid var(--border-subtle)', display: 'flex',
-            flexDirection: 'column', flexShrink: 0, position: 'fixed', left: 0, top: 0, bottom: 0,
-        }}>
-            {/* Logo */}
-            <div style={{ height: 64, display: 'flex', alignItems: 'center', padding: '0 24px', borderBottom: '1px solid var(--border-subtle)' }}>
-                <span className="gradient-text" style={{ fontSize: 16, fontWeight: 700 }}>AdminHub</span>
-                <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 9999, background: 'linear-gradient(135deg, #3B1FD4, #E03FD8)', color: '#F2F2ED', marginLeft: 8, letterSpacing: '0.05em' }}>
-                    ADMIN
-                </span>
-            </div>
+        <>
+            {/* Mobile Backdrop */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+                    onClick={onClose}
+                />
+            )}
 
-            {/* Nav */}
-            <nav style={{ flex: 1, padding: '20px 0' }}>
-                <p style={{ fontSize: 10, fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', padding: '0 24px', marginBottom: 8 }}>
-                    Navigation
-                </p>
-                {navItems.map(({ icon: Icon, label, to, end }) => (
-                    <NavLink
-                        key={to}
-                        to={to}
-                        end={end}
-                        style={({ isActive }) => ({
-                            display: 'flex', alignItems: 'center', gap: 12,
-                            padding: '10px 24px', textDecoration: 'none',
-                            fontSize: 14, fontWeight: 500,
-                            color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
-                            background: isActive ? 'rgba(139,63,232,0.1)' : 'transparent',
-                            borderLeft: isActive ? '3px solid #8B3FE8' : '3px solid transparent',
-                            transition: 'all 0.15s ease',
-                            position: 'relative',
-                        })}
-                        className={({ isActive }) => isActive ? '' : 'sidebar-nav-item'}
+            {/* Sidebar Container */}
+            <aside
+                className={`
+                    fixed inset-y-0 left-0 z-50 flex flex-col w-[240px] h-[100dvh]
+                    bg-[#0C0C0E] border-r border-white/5
+                    transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
+                    ${isOpen ? 'translate-x-0 shadow-2xl shadow-brand-purple/20' : '-translate-x-full'}
+                    lg:translate-x-0 lg:shadow-none
+                `}
+            >
+                {/* Header Logo */}
+                <div className="h-16 flex items-center justify-between px-6 border-b border-white/5 shrink-0">
+                    <div className="flex items-center gap-2">
+                        <span className="gradient-text text-base font-bold font-display tracking-tight">AdminHub</span>
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gradient-to-br from-brand-purple to-brand-magenta text-white tracking-wider">
+                            ADMIN
+                        </span>
+                    </div>
+                    {/* Mobile Close Button */}
+                    <button
+                        onClick={onClose}
+                        className="lg:hidden p-1.5 -mr-2 text-text-secondary hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                     >
-                        <Icon size={18} />
-                        {label}
-                    </NavLink>
-                ))}
-            </nav>
-
-            {/* User row */}
-            <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', gap: 10 }}>
-                <Avatar src={user?.avatar_url} name={user?.name} size="sm" />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name || 'Admin'}</p>
-                    <p style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email}</p>
+                        <X size={18} />
+                    </button>
                 </div>
-                <button onClick={handleLogout} title="Logout" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', flexShrink: 0, padding: 4 }}>
-                    <LogOut size={16} />
-                </button>
-            </div>
-        </aside>
+
+                {/* Navigation Links */}
+                <nav className="flex-1 py-6 overflow-y-auto overflow-x-hidden">
+                    <p className="text-[10px] font-medium text-text-muted uppercase tracking-widest px-6 mb-3">
+                        Navigation
+                    </p>
+                    <div className="space-y-1 px-3">
+                        {navItems.map(({ icon: Icon, label, to, end }) => (
+                            <NavLink
+                                key={to}
+                                to={to}
+                                end={end}
+                                className={({ isActive }) => `
+                                    flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
+                                    ${isActive
+                                        ? 'text-white bg-brand-purple/10 shadow-[inset_3px_0_0_0_#8B3FE8]'
+                                        : 'text-text-secondary hover:text-white hover:bg-white/5'
+                                    }
+                                `}
+                            >
+                                <Icon size={18} className="shrink-0" />
+                                <span>{label}</span>
+                            </NavLink>
+                        ))}
+                    </div>
+                </nav>
+
+                {/* User Profile Footer */}
+                <div className="p-4 border-t border-white/5 mt-auto flex items-center justify-between hover:bg-white/[0.02] transition-colors shrink-0">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <Avatar src={user?.avatar_url} name={user?.name} size="sm" />
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-white truncate">{user?.name || 'Admin'}</p>
+                            <p className="text-[11px] text-text-muted truncate">{user?.email}</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={handleLogout}
+                        title="Logout"
+                        className="p-2 text-text-muted hover:text-brand-orange hover:bg-brand-orange/10 rounded-lg transition-colors shrink-0 ml-2"
+                    >
+                        <LogOut size={16} />
+                    </button>
+                </div>
+            </aside>
+        </>
     );
 }

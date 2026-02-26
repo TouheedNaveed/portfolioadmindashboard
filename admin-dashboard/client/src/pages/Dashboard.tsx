@@ -93,8 +93,8 @@ export default function Dashboard() {
                 <h3 style={{ fontSize: 20, fontWeight: 600, color: 'var(--text-primary)' }}>Recent Submissions</h3>
                 <Link to="/dashboard/contacts" className="gradient-text" style={{ fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>View All →</Link>
             </div>
-            <div style={{ borderRadius: 8, border: '1px solid var(--border-subtle)', overflow: 'hidden', marginBottom: 32 }}>
-                <table className="data-table">
+            <div style={{ borderRadius: 8, border: '1px solid var(--border-subtle)', overflowX: 'auto', marginBottom: 32 }}>
+                <table className="data-table" style={{ minWidth: 600 }}>
                     <thead><tr>
                         <th>Name</th><th>Email</th><th>Message</th><th>Date</th><th>Status</th>
                     </tr></thead>
