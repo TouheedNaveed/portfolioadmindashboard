@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, CheckCircle2, RefreshCw, Mail } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Mail } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { Input } from '@/components/ui/Input';
