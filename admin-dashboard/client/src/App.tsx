@@ -1,6 +1,5 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
@@ -21,29 +20,30 @@ export default function App() {
       {/* Top-level global loader that mounts exactly once on app load */}
       <LoadingScreen forceMinimumDuration={true} />
 
+      {/* NOTE: AnimatePresence mode="wait" removed — it blocked Outlet content
+          from rendering (stayed at opacity:0) when navigating between tabs.
+          Page content animations are handled at the component level instead. */}
       <Suspense fallback={<LoadingScreen forceMinimumDuration={false} />}>
-        <AnimatePresence mode="wait">
-          <Routes>
-            {/* Auth routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Routes>
+          {/* Auth routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-            {/* Protected dashboard routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route element={<DashboardLayout />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/dashboard/contacts" element={<Contacts />} />
-                <Route path="/dashboard/contacts/:id" element={<ContactDetail />} />
-                <Route path="/dashboard/settings" element={<Settings />} />
-              </Route>
+          {/* Protected dashboard routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard/contacts" element={<Contacts />} />
+              <Route path="/dashboard/contacts/:id" element={<ContactDetail />} />
+              <Route path="/dashboard/settings" element={<Settings />} />
             </Route>
+          </Route>
 
-            {/* Catch all */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </AnimatePresence>
+          {/* Catch all */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
       </Suspense>
     </BrowserRouter>
   );
